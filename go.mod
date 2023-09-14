@@ -1,4 +1,4 @@
-module gocqltable
+module github.com/voyageivi/gocqltable
 
 go 1.18
 
