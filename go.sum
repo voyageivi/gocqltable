@@ -1,0 +1,4 @@
+github.com/gocql/gocql v0.0.0-20150411115113-30aa70a1dd10 h1:oNEy72e/Txm0Htvim0PbTPt0oPLbeiD3ICzKJOhsMWA=
+github.com/gocql/gocql v0.0.0-20150411115113-30aa70a1dd10/go.mod h1:GjP0ITc4WbMO5dEWwikPqq0ZWbloAO6CO6g0VAK7tTc=
+github.com/golang/groupcache v0.0.0-20150125180832-604ed5785183 h1:jVvxxvU4YxIF7cDz21H4Xh2K2ztj/tzglkFiyTusFMo=
+github.com/golang/groupcache v0.0.0-20150125180832-604ed5785183/go.mod h1:cIg4eruTrX1D+g88fzRXU5OdNfaM+9IcxsU14FzY7Hc=
