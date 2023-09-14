@@ -2,6 +2,7 @@
 package reflect
 
 import (
+	"encoding/json"
 	"fmt"
 	r "reflect"
 	"strings"
@@ -13,14 +14,14 @@ import (
 // tag value. The "cql" key in the struct field's tag value is the key
 // name. Examples:
 //
-//   // Field appears in the resulting map as key "myName".
-//   Field int `cql:"myName"`
+//	// Field appears in the resulting map as key "myName".
+//	Field int `cql:"myName"`
 //
-//   // Field appears in the resulting as key "Field"
-//   Field int
+//	// Field appears in the resulting as key "Field"
+//	Field int
 //
-//   // Field appears in the resulting map as key "myName"
-//   Field int "myName"
+//	// Field appears in the resulting map as key "myName"
+//	Field int "myName"
 func StructToMap(val interface{}) (map[string]interface{}, bool) {
 	// indirect so function works with both structs and pointers to them
 	structVal := r.Indirect(r.ValueOf(val))
@@ -48,6 +49,12 @@ func MapToStruct(m map[string]interface{}, struc interface{}) error {
 			structField := val.Field(info.Num)
 			if structField.Type().Name() == r.TypeOf(v).Name() {
 				structField.Set(r.ValueOf(v))
+			} else if r.TypeOf(v).Name() == "string" {
+				if structField.Kind() == r.Ptr {
+					json.Unmarshal([]byte(v.(string)), structField)
+					structField.Set(r.ValueOf(v))
+				}
+
 			}
 		}
 	}

@@ -4,14 +4,14 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"reflect"
 	"strconv"
 	"strings"
-	"reflect"
 	"time"
 
-	"github.com/kristoiv/gocqltable"
+	"gocqltable"
 
-	r "github.com/kristoiv/gocqltable/reflect"
+	r "gocqltable/reflect"
 )
 
 type RangeInterface interface {
