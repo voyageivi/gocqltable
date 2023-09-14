@@ -59,6 +59,9 @@ func (t CRUD) insert(row interface{}, ttl *time.Time) error {
 	placeholders := []string{}
 	vals := []interface{}{}
 	for key, value := range m {
+		if key == "-" {
+			continue
+		}
 		// Check for empty row- or range keys
 		for _, rowKey := range append(rowKeys, rangeKeys...) {
 			if strings.ToLower(key) == strings.ToLower(rowKey) {

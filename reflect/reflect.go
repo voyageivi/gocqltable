@@ -2,12 +2,13 @@
 package reflect
 
 import (
-	"encoding/json"
 	"fmt"
 	r "reflect"
 	"strings"
 	"sync"
 )
+
+var interfaceType = r.TypeOf((*CassandraEncDec)(nil)).Elem()
 
 // StructToMap converts a struct to map. The object's default key string
 // is the struct field name but can be specified in the struct field's
@@ -33,7 +34,27 @@ func StructToMap(val interface{}) (map[string]interface{}, bool) {
 	mapVal := make(map[string]interface{}, len(sinfo.FieldsList))
 	for _, field := range sinfo.FieldsList {
 		if structVal.Field(field.Num).CanInterface() {
-			mapVal[field.Key] = structVal.Field(field.Num).Interface()
+			val := structVal.Field(field.Num).Interface()
+			mVal := r.TypeOf(val)
+
+			if mVal.Kind() == r.Ptr && mVal.Implements(interfaceType) {
+				var strVal string
+				if bs, err := (val.(CassandraEncDec)).MarshalCas(); err == nil {
+					strVal = string(bs)
+				}
+				mapVal[field.Key] = strVal
+			} else if mVal.Kind() == r.Struct && r.New(mVal).Type().Implements(interfaceType) {
+				var strVal string
+
+				rv := r.New(mVal)
+				rv.Elem().Set(r.ValueOf(val))
+				if bs, err := (rv.Interface().(CassandraEncDec)).MarshalCas(); err == nil {
+					strVal = string(bs)
+				}
+				mapVal[field.Key] = strVal
+			} else {
+				mapVal[field.Key] = val
+			}
 		}
 	}
 	return mapVal, true
@@ -50,15 +71,21 @@ func MapToStruct(m map[string]interface{}, struc interface{}) error {
 			if structField.Type().Name() == r.TypeOf(v).Name() {
 				structField.Set(r.ValueOf(v))
 			} else if r.TypeOf(v).Name() == "string" {
-				if structField.Kind() == r.Ptr {
+				interfaceType := r.TypeOf((*CassandraEncDec)(nil)).Elem()
+
+				if structField.Kind() == r.Ptr && structField.Type().Implements(interfaceType) {
 					newType := r.New(structField.Type().Elem())
 					obj := newType.Interface()
-					json.Unmarshal([]byte(v.(string)), obj)
+					(obj.(CassandraEncDec)).UnmarshalCas([]byte(v.(string)))
 					structField.Set(r.ValueOf(obj))
 				} else if structField.Kind() == r.Struct {
+
 					newType := r.New(structField.Type())
+					if !newType.Type().Implements(interfaceType) {
+						continue
+					}
 					obj := newType.Interface()
-					json.Unmarshal([]byte(v.(string)), obj)
+					(obj.(CassandraEncDec)).UnmarshalCas([]byte(v.(string)))
 					val := r.ValueOf(obj).Elem()
 					structField.Set(val)
 				}
@@ -126,7 +153,9 @@ func getStructInfo(v r.Value) *structInfo {
 		if tag == "" && strings.Index(string(field.Tag), ":") < 0 {
 			tag = string(field.Tag)
 		}
-		if tag != "" {
+		if tag == "-" {
+			continue
+		} else if tag != "" {
 			info.Key = tag
 		} else {
 			info.Key = field.Name
