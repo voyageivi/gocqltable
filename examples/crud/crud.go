@@ -5,9 +5,9 @@ import (
 	"log"
 	"time"
 
-	"github.com/kristoiv/gocqltable"
-	"github.com/kristoiv/gocqltable/recipes"
 	"github.com/gocql/gocql"
+	"github.com/voyageivi/gocqltable"
+	"github.com/voyageivi/gocqltable/recipes"
 )
 
 func main() {

@@ -6,11 +6,15 @@ import (
 	"testing"
 )
 
+type Obj struct {
+	Name string `json:"name,omitempty"`
+}
 type Tweet struct {
 	Timeline      string
 	ID            gocql.UUID  `cql:"id"`
 	Text          string      `teXt`
 	OriginalTweet *gocql.UUID `json:"origin"`
+	Obj           Obj         `cql:obj`
 }
 
 func TestStructToMap(t *testing.T) {
@@ -25,10 +29,9 @@ func TestStructToMap(t *testing.T) {
 	}
 
 	tweet := Tweet{
-		"t",
-		gocql.TimeUUID(),
-		"hello gocassa",
-		nil,
+		Timeline: "t",
+		ID:       gocql.TimeUUID(),
+		Text:     "hello gocassa",
 	}
 
 	m, ok = StructToMap(tweet)

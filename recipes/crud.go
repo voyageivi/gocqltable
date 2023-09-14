@@ -9,9 +9,9 @@ import (
 	"strings"
 	"time"
 
-	"gocqltable"
+	"github.com/voyageivi/gocqltable"
 
-	r "gocqltable/reflect"
+	r "github.com/voyageivi/gocqltable/reflect"
 )
 
 type RangeInterface interface {

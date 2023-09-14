@@ -6,7 +6,7 @@ import (
 
 	"github.com/gocql/gocql"
 
-	r "gocqltable/reflect"
+	r "github.com/voyageivi/gocqltable/reflect"
 )
 
 type TableInterface interface {

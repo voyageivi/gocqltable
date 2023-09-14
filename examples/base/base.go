@@ -5,8 +5,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/kristoiv/gocqltable"
 	"github.com/gocql/gocql"
+	"github.com/voyageivi/gocqltable"
 )
 
 func main() {

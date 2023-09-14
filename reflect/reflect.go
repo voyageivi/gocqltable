@@ -51,8 +51,16 @@ func MapToStruct(m map[string]interface{}, struc interface{}) error {
 				structField.Set(r.ValueOf(v))
 			} else if r.TypeOf(v).Name() == "string" {
 				if structField.Kind() == r.Ptr {
-					json.Unmarshal([]byte(v.(string)), structField)
-					structField.Set(r.ValueOf(v))
+					newType := r.New(structField.Type().Elem())
+					obj := newType.Interface()
+					json.Unmarshal([]byte(v.(string)), obj)
+					structField.Set(r.ValueOf(obj))
+				} else if structField.Kind() == r.Struct {
+					newType := r.New(structField.Type())
+					obj := newType.Interface()
+					json.Unmarshal([]byte(v.(string)), obj)
+					val := r.ValueOf(obj).Elem()
+					structField.Set(val)
 				}
 
 			}
